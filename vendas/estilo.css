@@ -1,0 +1,87 @@
+.menu {
+    background-color: cornflowerblue;
+    color: white;
+    height: 100vh; /*altura máxima da tela*/
+    list-style: none;
+}
+
+.menu-item {
+    display: block;
+    margin-left: -40px;
+    padding: 10px 20px;
+    font-style: none;
+    text-decoration: none;
+    color: white;
+    border: 1px solid white;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+.menu-item:hover{
+    background-color:white;
+    color: black;
+    text-decoration: none;
+    font-size: 20px;
+    transition: 1s;
+}
+
+@media(max-width: 768px){
+    .menu{
+        display: none;
+    }
+}
+
+.card{
+    box-shadow: 2px 2px 10px;
+    padding: 10px;
+    border-radius: 15px;
+    margin: 10px;
+    position: fixed;
+}
+
+.card:hover{
+    background-color: honeydew;
+    transition: 2s;
+}
+.editar{
+    color: green;
+    margin-right: 15px;
+}
+.excluir{
+    color: red;
+}
+.fundo{
+    background-color: cornflowerblue;
+
+}
+
+.painel{
+    width: 350px; /*largura*/
+    margin: auto; /*centraliza*/
+    background-color: rgba(255, 255, 255, 0.697);    /*cor de fundo*/
+    margin-top: 50vh;            /*margemd e cima*/
+    padding: 40px;                /*espaço interno*/
+    border-radius: 20px;         /*arredondar borda*/
+    box-shadow: 2px 2px 10px;   /*sombra*/
+    z-index: 1;
+    position: absolute;
+    right: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+}
+
+
+
+.usuario{
+    font-size: 50px;
+}
+.topo{
+    text-align: center;
+    color: rgb(46, 55, 135);
+}
+
+.mensagem{
+    color: red;
+    font-size: 18px;
+
+}
