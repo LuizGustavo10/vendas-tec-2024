@@ -46,45 +46,25 @@ INSERT INTO cidade(nome, estado, cep) VALUES
 ('Nova Londrina','Paraná','87.970-000'), 
 ('Marilena','Paraná','87.960-000');
 
-CREATE TABLE escola(
-	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    nome VARCHAR(45),
-    endereco VARCHAR(45),
-    bairro VARCHAR(45),
-    telefone VARCHAR(15),
-    celular VARCHAR(15),
-    descricao VARCHAR(255),
-    imagem VARCHAR(255),
-    cidade INT
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-INSERT INTO escola(nome, endereco, bairro, telefone, celular, descricao, imagem, cidade) VALUES
-('Colégio Estadual Princesa Isabel','Rua Recife, 1171','Centro','(44)3448-1767','n','teste','imagem', 2),
-('Colégio Ary João Dresch','Praça Matriz, 143','Centro','(44)3432-1178','n','teste','imagem', 1);
-
-CREATE TABLE cardapio(
-	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    serie VARCHAR(45),
-    nutricionista VARCHAR(45),
-   	pdf VARCHAR(255),
-    escola int
-)ENGINE=MyISAM DEFAULT CHARSET=latin1;;
-
-INSERT INTO cardapio(serie, nutricionista, pdf, escola) VALUES
-('6º ao 9º ano fundamental','Ana Laura','endereço do pdf', 1),
-('1º ao 3º ano ensino médio','Juliana','endereço do pdf', 2);
 
 -- Criar a tabela de produtos
 CREATE TABLE produtos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     preco DECIMAL(10, 2) NOT NULL,
-    estoque INT NOT NULL
+    estoque INT,
+    custo INT,
+    lucro INT,
+    margem INT
 );
 
 -- Criar a tabela de vendas
 CREATE TABLE venda (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    obs VARCHAR(45),
+    valor_total INT,
+    quantidade_total INT,
     data_venda DATETIME NOT NULL
 );
 
@@ -94,7 +74,20 @@ CREATE TABLE item_venda (
     venda_id INT,
     produto_id INT,
     quantidade INT,
-    total DECIMAL(10, 2),
+    valor DECIMAL(10, 2),
     FOREIGN KEY (venda_id) REFERENCES venda(id),
     FOREIGN KEY (produto_id) REFERENCES produtos(id)
 );
+
+INSERT INTO produtos (nome, preco, estoque, custo, lucro, margem) VALUES
+('Produto A', 25.50, 100, 15, 10, 40),
+('Produto B', 10.00, 200, 5, 5, 50),
+('Produto C', 7.75, 150, 4, 3.75, 48.39);
+
+INSERT INTO venda (obs, valor_total, quantidade_total, data_venda) VALUES
+('Venda realizada com sucesso', 52, 3, '2024-08-30 14:00:00');
+
+INSERT INTO item_venda (venda_id, produto_id, quantidade, valor) VALUES
+(1, 1, 1, 25.50),
+(1, 2, 2, 20.00),
+(1, 3, 1, 7.75);

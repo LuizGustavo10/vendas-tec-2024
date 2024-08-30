@@ -41,10 +41,4 @@
         header('location: index.php?erro=1');
     }
 
-
-    
-
-
-
-
 ?>

@@ -11,7 +11,7 @@ $conexao = mysqli_connect($endereco, $usuario, $senha, $nome);
 
 <?php
 $endereco = "localhost"; //localhost
-$nome = "projetoescola2";   //projetoescola
+$nome = "vendas";   //projetoescola
 $usuario = "root";         //root
 $senha = "";               //vazio
 $conexao = mysqli_connect($endereco, $usuario, $senha, $nome);
