@@ -7,9 +7,10 @@
 
     <li> <a href="./sistema.php" class="menu-item"> Usuário </a> </li>
     <li> <a href="./cidade.php" class="menu-item"> Cidade </a> </li>
-    <li> <a href="./escola.php" class="menu-item"> Escola </a> </li>
-    <li> <a href="./cardapio.php" class="menu-item"> Cardápio </a> </li>
-    <li> <a href="./cardapio.php" class="menu-item"> Relatório </a> </li>
+    <li> <a href="./cliente.php" class="menu-item"> cliente </a> </li>
+    <li> <a href="./funcionario.php" class="menu-item"> funcionario </a> </li>
+    <li> <a href="./vendas.php" class="menu-item"> Efetuar Venda </a> </li>
+    <li> <a href="./listaVenda.php" class="menu-item"> Lista Vendas </a> </li>
 
     <li> <a href="./sair.php" class="menu-item"> Sair </a> </li>
 </ul>
