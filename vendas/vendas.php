@@ -114,7 +114,7 @@ foreach ($_SESSION['carrinho'] as $item) {
 
                     </div>
                 </form>
-
+                
                 <table class="table mt-4">
                     <thead>
                         <tr>
