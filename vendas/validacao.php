@@ -14,7 +14,6 @@ if(!isset($_SESSION['cpf']) or !isset($_SESSION['senha'])){
 
     //manda para o login
     header('location:index.php');
-
 }
 
 ?>

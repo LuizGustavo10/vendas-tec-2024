@@ -24,7 +24,6 @@
 
         // inicia a sessão
         session_start();
-
         //cria váriaveis de sessão
         $_SESSION['usuario'] = $colunas['nome'];
         $_SESSION['cpf'] = $cpf;

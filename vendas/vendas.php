@@ -3,67 +3,43 @@
 include('conexao.php');
 include('validacao.php');
 
-
 if (!empty($_GET['idVenda'])) {
-    $id = $_GET['idVenda'];
-    $sql = "SELECT * FROM venda WHERE id='$id' ";
-    $dados = mysqli_query($conexao, $sql);
-    $dadosAlteracao = mysqli_fetch_assoc($dados);
-
-    //destino do formulário vai para o alterar.php
-    $destino = './venda/alterar.php';
-
+    $idVenda = $_GET['idVenda'];
+} else {
+    // Criar uma nova venda se não houver uma em andamento
+    $conexao->query("INSERT INTO venda (data_venda) VALUES (NOW())");
+    $idVenda = $conexao->insert_id; // Obter o ID da nova venda
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
+    // Adicionar produto diretamente à tabela item_venda
+    $produtoId = $_POST['produto'];
+    $quantidade = $_POST['quantidade'];
 
-$_SESSION['carrinho'] = [];
+    // Buscar o preço do produto
+    $result = $conexao->query("SELECT preco FROM produtos WHERE id = $produtoId");
+    $produto = $result->fetch_assoc();
+    $preco = $produto['preco'];
 
+    // Inserir o produto na tabela item_venda
+    $conexao->query("INSERT INTO item_venda (venda_id, produto_id, quantidade, valor) VALUES ($idVenda, $produtoId, $quantidade, $preco)");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['produto'])) {
-        // Adicionar produto ao carrinho
-        $produtoId = $_POST['produto'];
-        $quantidade = $_POST['quantidade'];
-
-        // Buscar detalhes do produto
-        $result = $conexao->query("SELECT * FROM produtos WHERE id = $produtoId");
-        $produto = $result->fetch_assoc();
-
-        $item = [
-            'id' => $produtoId,
-            'nome' => $produto['nome'],
-            'preco' => $produto['preco'],
-            'quantidade' => $quantidade,
-        ];
-
-        $_SESSION['carrinho'][] = $item;
-    } elseif (isset($_POST['finalizar'])) {
-        // Finalizar venda
-        $obs = $_POST['obs'];
-        $valorTotal = $_POST['valor_total'];
-        $quantidadeTotal = $_POST['quantidade_total'];
-
-        $conexao->query("INSERT INTO venda (obs, valor_total, quantidade_total, data_venda) VALUES ('$obs', $valorTotal, $quantidadeTotal, NOW())");
-        $vendaId = $conexao->insert_id;
-
-        foreach ($_SESSION['carrinho'] as $item) {
-            $conexao->query("INSERT INTO item_venda (venda_id, produto_id, quantidade, valor) VALUES ($vendaId, {$item['id']}, {$item['quantidade']}, {$item['preco']})");
-        }
-
-        // Limpar carrinho
-        unset($_SESSION['carrinho']);
-        $_SESSION['carrinho'] = [];
-    }
+    // Redirecionar para evitar reenvio de formulário
+    header("Location: vendas.php?idVenda=$idVenda");
+    exit();
 }
 
 // Totalizadores
 $totalQuantidade = 0;
 $totalValor = 0;
-foreach ($_SESSION['carrinho'] as $item) {
-    $totalQuantidade += $item['quantidade'];
-    $totalValor += $item['quantidade'] * $item['preco'];
-}
 
+// Buscar os produtos da venda atual
+$itensVenda = $conexao->query("SELECT p.nome, iv.produto_id, iv.quantidade, iv.valor FROM item_venda iv JOIN produtos p ON iv.produto_id = p.id WHERE iv.venda_id = $idVenda");
+
+while ($item = $itensVenda->fetch_assoc()) {
+    $totalQuantidade += $item['quantidade'];
+    $totalValor += $item['quantidade'] * $item['valor'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -77,18 +53,11 @@ foreach ($_SESSION['carrinho'] as $item) {
 
 <body>
     <div class="container">
-
-
         <h1>Tela de Venda</h1>
         <div class="row">
-
             <div class="col-md-8">
-
                 <form id="form-produto" method="POST" action="">
-
                     <div class="row">
-
-
                         <div class="form-group col-md">
                             <label for="produto">Produto</label>
                             <select id="produto" name="produto" class="form-control">
@@ -100,18 +69,13 @@ foreach ($_SESSION['carrinho'] as $item) {
                                 ?>
                             </select>
                         </div>
-                        <div class=" form-group col-md">
-                            <label for="preco">Valor</label>
-                            <input type="text" id="preco" name="preco" class="form-control" readonly>
-                        </div>
                         <div class="form-group col-md">
                             <label for="quantidade">Quantidade</label>
-                            <input type="number" id="quantidade" name="quantidade" class="form-control">
+                            <input type="number" id="quantidade" name="quantidade" class="form-control" required>
                         </div>
                         <div class="col-md">
                             <button type="submit" class="btn btn-primary" style="margin-top: 25px;">Adicionar</button>
                         </div>
-
                     </div>
                 </form>
                 
@@ -127,13 +91,14 @@ foreach ($_SESSION['carrinho'] as $item) {
                     </thead>
                     <tbody>
                         <?php
-                        foreach ($_SESSION['carrinho'] as $item) {
+                        $itensVenda->data_seek(0); // Reiniciar o ponteiro para a primeira linha
+                        while ($item = $itensVenda->fetch_assoc()) {
                             echo "<tr>";
                             echo "<td>{$item['nome']}</td>";
                             echo "<td>{$item['quantidade']}</td>";
-                            echo "<td>{$item['preco']}</td>";
-                            echo "<td>" . $item['quantidade'] * $item['preco'] . "</td>";
-                            echo "<td><a href='remover_produto.php?id={$item['id']}' class='btn btn-danger'>Remover</a></td>";
+                            echo "<td>{$item['valor']}</td>";
+                            echo "<td>" . ($item['quantidade'] * $item['valor']) . "</td>";
+                            echo "<td><a href='remover_produto.php?idVenda=$idVenda&produtoId={$item['produto_id']}' class='btn btn-danger'>Remover</a></td>";
                             echo "</tr>";
                         }
                         ?>
@@ -141,21 +106,16 @@ foreach ($_SESSION['carrinho'] as $item) {
                 </table>
             </div>
 
-
             <div class="col-md-4">
                 <h3>Resumo da Venda</h3>
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="quantidade_total">Quantidade Total</label>
-                        <input type="text" id="quantidade_total" name="quantidade_total" class="form-control"
-                            value="<?php echo isset($dadosAlteracao) ? $dadosAlteracao['quantidade_total'] : $totalQuantidade ?>"
-                            readonly>
+                        <input type="text" id="quantidade_total" name="quantidade_total" class="form-control" value="<?php echo $totalQuantidade; ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label for="valor_total">Valor Total</label>
-                        <input type="text" id="valor_total" name="valor_total" class="form-control"
-                            value="<?php echo isset($dadosAlteracao) ? $dadosAlteracao['valor_total'] : $totalValor ?>"
-                            readonly>
+                        <input type="text" id="valor_total" name="valor_total" class="form-control" value="<?php echo number_format($totalValor, 2, ',', '.'); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label for="obs">Observação</label>
@@ -167,8 +127,6 @@ foreach ($_SESSION['carrinho'] as $item) {
             </div>
         </div>
     </div>
-
-
 
     <script>
         document.getElementById('produto').addEventListener('change', function () {
