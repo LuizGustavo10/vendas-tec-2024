@@ -1,13 +1,13 @@
 <?php
 
-include ('conexao.php');
-include ('validacao.php');
+include('conexao.php');
+include('validacao.php');
 
 //destino do formulário vai para o inserir
 $destino = './venda/inserir.php';
 
 //se existir algum idAlt
-if(!empty($_GET['idAlt'])){
+if (!empty($_GET['idAlt'])) {
   $_SESSION['idVenda'] = $_GET['idAlt'];
 }
 
@@ -37,21 +37,21 @@ if(!empty($_GET['idAlt'])){
 <body>
 
   <?php include './modulosMenu/menuSuperior.php' ?>
-  
-  
-  
+
+
+
   <div class="container-fluid">
-    
+
     <!-- linha -->
     <div class="row">
       <!-- coluna -->
       <div class="col-md-3 menu">
-        <?php include './modulosMenu/menuLateral.php'?>
+        <?php include './modulosMenu/menuLateral.php' ?>
       </div>
       <div class="col-md-9">
 
         <div class="row">
-          
+
 
 
           <div class="col-md card">
@@ -69,27 +69,34 @@ if(!empty($_GET['idAlt'])){
               <tbody>
 
                 <?php
-                  //sql para selecionar todos dadosAlteracao
-                  $sql = "SELECT * FROM venda";
-                  //executa o sql e armazena
-                  $resultado = mysqli_query($conexao, $sql);
+                //sql para selecionar todos dadosAlteracao
+                $sql = "SELECT * FROM venda";
+                //executa o sql e armazena
+                $resultado = mysqli_query($conexao, $sql);
 
-                  while($coluna = mysqli_fetch_assoc($resultado)){
-                ?>
+                while ($coluna = mysqli_fetch_assoc($resultado)) {
+                  ?>
 
-                <tr>
+                  <tr>
 
-                  <td> <?php echo $coluna['id'] ?> </td>
-                  <td> <?php echo $coluna['valor_total'] ?> </td>
-                  <td> <?php echo $coluna['quantidade_total'] ?> </td>
-                  <td> <?php echo $coluna['data_venda'] ?> </td>
-                  <td> <?php echo $coluna['obs'] ?> </td>
-                  <td>
-                    <a href="vendas.php?idAlt=<?= $coluna['id'] ?>" title="Editar"> <i class="fa-solid fa-pen-to-square editar"></i> </a>
-                    <a href="<?php echo './venda/excluir.php?id='.$coluna['id']; ?>" title="Excluir"> <i class="fa-solid fa-trash excluir"></i></a>
-                  </td>
-                </tr>
-                
+                    <td> <?php echo $coluna['id'] ?> </td>
+                    <td> R$ <?php echo $coluna['valor_total'] ?> </td>
+                    <td> <?php echo $coluna['quantidade_total'] ?> </td>
+                    <td>
+                      <?php
+                      $data = new DateTime($coluna['data_venda']);
+                      echo $data->format('d/m/Y H:i');
+                      ?>
+                    </td>
+                    <td> <?php echo $coluna['obs'] ?> </td>
+                    <td>
+                      <a href="vendas.php?idVenda=<?= $coluna['id'] ?>" title="Editar"> <i
+                          class="fa-solid fa-pen-to-square editar"></i> </a>
+                      <a href="<?php echo './venda/excluir.php?id=' . $coluna['id']; ?>" title="Excluir"> <i
+                          class="fa-solid fa-trash excluir"></i></a>
+                    </td>
+                  </tr>
+
                 <?php } ?>
 
               </tbody>
@@ -119,7 +126,9 @@ if(!empty($_GET['idAlt'])){
 
 
   <script src="https://cdn.datatables.net/2.0.5/js/dataTables.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js" integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"
+    integrity="sha512-pHVGpX7F/27yZ0ISY+VVjyULApbDlD0/X0rgGbTqCE7WFW5MezNTWG/dnhtbBuICzsd0WQPgpE4REBLv+UqChw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <script src="script.js"></script>
 

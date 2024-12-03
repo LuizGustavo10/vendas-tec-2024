@@ -3,6 +3,7 @@
 include('conexao.php');
 include('validacao.php');
 
+//caso já exista um id de venda
 if (!empty($_GET['idVenda'])) {
     $idVenda = $_GET['idVenda'];
 } else {
@@ -11,6 +12,8 @@ if (!empty($_GET['idVenda'])) {
     $idVenda = $conexao->insert_id; // Obter o ID da nova venda
 }
 
+
+//adicionar produto
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
     // Adicionar produto diretamente à tabela item_venda
     $produtoId = $_POST['produto'];
@@ -21,6 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
     $produto = $result->fetch_assoc();
     $preco = $produto['preco'];
 
+    echo "$idVenda, $produtoId, $quantidade, $preco";
     // Inserir o produto na tabela item_venda
     $conexao->query("INSERT INTO item_venda (venda_id, produto_id, quantidade, valor) VALUES ($idVenda, $produtoId, $quantidade, $preco)");
 
@@ -34,7 +38,7 @@ $totalQuantidade = 0;
 $totalValor = 0;
 
 // Buscar os produtos da venda atual
-$itensVenda = $conexao->query("SELECT p.nome, iv.produto_id, iv.quantidade, iv.valor FROM item_venda iv JOIN produtos p ON iv.produto_id = p.id WHERE iv.venda_id = $idVenda");
+$itensVenda = $conexao->query("SELECT iv.id,  p.nome, iv.produto_id, iv.quantidade, iv.valor FROM item_venda iv JOIN produtos p ON iv.produto_id = p.id WHERE iv.venda_id = $idVenda");
 
 while ($item = $itensVenda->fetch_assoc()) {
     $totalQuantidade += $item['quantidade'];
@@ -56,7 +60,7 @@ while ($item = $itensVenda->fetch_assoc()) {
         <h1>Tela de Venda</h1>
         <div class="row">
             <div class="col-md-8">
-                <form id="form-produto" method="POST" action="">
+                <form id="form-produto" method="POST" action=""> 
                     <div class="row">
                         <div class="form-group col-md">
                             <label for="produto">Produto</label>
@@ -82,6 +86,7 @@ while ($item = $itensVenda->fetch_assoc()) {
                 <table class="table mt-4">
                     <thead>
                         <tr>
+                            <th>id</th>
                             <th>Produto</th>
                             <th>Quantidade</th>
                             <th>Valor Unitário</th>
@@ -91,14 +96,15 @@ while ($item = $itensVenda->fetch_assoc()) {
                     </thead>
                     <tbody>
                         <?php
-                        $itensVenda->data_seek(0); // Reiniciar o ponteiro para a primeira linha
+                        $itensVenda->data_seek(offset: 0); // Reiniciar o ponteiro para a primeira linha
                         while ($item = $itensVenda->fetch_assoc()) {
                             echo "<tr>";
+                            echo "<td>{$item['id']}</td>";
                             echo "<td>{$item['nome']}</td>";
                             echo "<td>{$item['quantidade']}</td>";
                             echo "<td>{$item['valor']}</td>";
                             echo "<td>" . ($item['quantidade'] * $item['valor']) . "</td>";
-                            echo "<td><a href='remover_produto.php?idVenda=$idVenda&produtoId={$item['produto_id']}' class='btn btn-danger'>Remover</a></td>";
+                            echo "<td><a href='./venda/remover_produto.php?idVenda=$idVenda&idItem={$item['id']}' class='btn btn-danger'>Remover</a></td>";
                             echo "</tr>";
                         }
                         ?>
@@ -107,7 +113,7 @@ while ($item = $itensVenda->fetch_assoc()) {
             </div>
 
             <div class="col-md-4">
-                <h3>Resumo da Venda</h3>
+                <h3> Resumo da Venda</h3>
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="quantidade_total">Quantidade Total</label>
@@ -128,6 +134,8 @@ while ($item = $itensVenda->fetch_assoc()) {
         </div>
     </div>
 
+
+    
     <script>
         document.getElementById('produto').addEventListener('change', function () {
             var produtoId = this.value;

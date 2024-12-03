@@ -9,7 +9,7 @@ $conexao = mysqli_connect($endereco, $usuario, $senha, $nome);
 
 
 <?php
-$endereco = "localhost"; //localhost
+$endereco = "localhost"; //localhost+
 $nome = "vendas";   //projetoescola
 $usuario = "root";         //root
 $senha = "";               //vazio

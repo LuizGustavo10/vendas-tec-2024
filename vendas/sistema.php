@@ -11,7 +11,6 @@ if(!empty($_GET['idAlt'])){
   $id= $_GET['idAlt'];
   $sql = "SELECT * FROM usuario WHERE id='$id' ";
 
-
   $dados = mysqli_query($conexao, $sql);
   $dadosAlteracao = mysqli_fetch_assoc($dados);
 
@@ -63,7 +62,8 @@ if(!empty($_GET['idAlt'])){
 
             <form action="<?=$destino?>" method="POST">
 
-              <h3>Cadastro de usuário</h3>
+              <h3> Cadastro de usuário </h3>
+
               <hr>
               <div class="form-group">
                 <label> Código </label>
