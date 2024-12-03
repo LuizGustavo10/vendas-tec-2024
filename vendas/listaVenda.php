@@ -70,7 +70,7 @@ if (!empty($_GET['idAlt'])) {
 
                 <?php
                 //sql para selecionar todos dadosAlteracao
-                $sql = "SELECT * FROM venda";
+                $sql = "SELECT * FROM venda ORDER BY id DESC";
                 //executa o sql e armazena
                 $resultado = mysqli_query($conexao, $sql);
 
@@ -92,7 +92,7 @@ if (!empty($_GET['idAlt'])) {
                     <td>
                       <a href="vendas.php?idVenda=<?= $coluna['id'] ?>" title="Editar"> <i
                           class="fa-solid fa-pen-to-square editar"></i> </a>
-                      <a href="<?php echo './venda/excluir.php?id=' . $coluna['id']; ?>" title="Excluir"> <i
+                      <a href="<?php echo './venda/remover_venda.php?id=' . $coluna['id']; ?>" title="Excluir"> <i
                           class="fa-solid fa-trash excluir"></i></a>
                     </td>
                   </tr>

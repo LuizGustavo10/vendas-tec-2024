@@ -1,5 +1,8 @@
 $(document).ready( function () {
-    $('#tabela').DataTable();
+    $('#tabela').DataTable({
+        order: [[0, 'desc']] // Ordena a primeira coluna de forma decrescente
+    });
+    
 } );
 
 // var table = new DataTable('#tabela', {

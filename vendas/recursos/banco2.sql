@@ -103,3 +103,6 @@ INSERT INTO item_venda(quantidade, valor, venda_id,
 produto_id) VALUES
 (2, 140, 1, 1),
 (2, 140, 1, 2);
+
+ALTER TABLE venda
+ADD COLUMN orcamento TEXT;

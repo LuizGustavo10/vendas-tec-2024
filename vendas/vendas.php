@@ -6,44 +6,11 @@ include('validacao.php');
 //caso já exista um id de venda
 if (!empty($_GET['idVenda'])) {
     $idVenda = $_GET['idVenda'];
-} else {
-    // Criar uma nova venda se não houver uma em andamento
-    $conexao->query("INSERT INTO venda (data_venda) VALUES (NOW())");
-    $idVenda = $conexao->insert_id; // Obter o ID da nova venda
-}
+} 
 
+include './venda/adicionar_produto.php';
+include './venda/atualizar_tabela.php';
 
-//adicionar produto
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
-    // Adicionar produto diretamente à tabela item_venda
-    $produtoId = $_POST['produto'];
-    $quantidade = $_POST['quantidade'];
-
-    // Buscar o preço do produto
-    $result = $conexao->query("SELECT preco FROM produtos WHERE id = $produtoId");
-    $produto = $result->fetch_assoc();
-    $preco = $produto['preco'];
-
-    echo "$idVenda, $produtoId, $quantidade, $preco";
-    // Inserir o produto na tabela item_venda
-    $conexao->query("INSERT INTO item_venda (venda_id, produto_id, quantidade, valor) VALUES ($idVenda, $produtoId, $quantidade, $preco)");
-
-    // Redirecionar para evitar reenvio de formulário
-    header("Location: vendas.php?idVenda=$idVenda");
-    exit();
-}
-
-// Totalizadores
-$totalQuantidade = 0;
-$totalValor = 0;
-
-// Buscar os produtos da venda atual
-$itensVenda = $conexao->query("SELECT iv.id,  p.nome, iv.produto_id, iv.quantidade, iv.valor FROM item_venda iv JOIN produtos p ON iv.produto_id = p.id WHERE iv.venda_id = $idVenda");
-
-while ($item = $itensVenda->fetch_assoc()) {
-    $totalQuantidade += $item['quantidade'];
-    $totalValor += $item['quantidade'] * $item['valor'];
-}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -60,18 +27,20 @@ while ($item = $itensVenda->fetch_assoc()) {
         <h1>Tela de Venda</h1>
         <div class="row">
             <div class="col-md-8">
-                <form id="form-produto" method="POST" action=""> 
+                <form id="form-produto" method="POST" action="">
                     <div class="row">
-                        <div class="form-group col-md">
+                        <div class="form-group col-md-8">
                             <label for="produto">Produto</label>
+
                             <select id="produto" name="produto" class="form-control">
                                 <?php
-                                $result = $conexao->query("SELECT id, nome FROM produtos");
+                                $result = $conexao->query("SELECT id, nome, preco, estoque FROM produtos");
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['id']}'>{$row['nome']}</option>";
+                                    echo "<option value='{$row['id']}'>{$row['nome']} - Preco: {$row['preco']} - Quantidade: {$row['estoque']}</option>";
                                 }
                                 ?>
                             </select>
+
                         </div>
                         <div class="form-group col-md">
                             <label for="quantidade">Quantidade</label>
@@ -82,8 +51,8 @@ while ($item = $itensVenda->fetch_assoc()) {
                         </div>
                     </div>
                 </form>
-                
-                <table class="table mt-4">
+
+                <table class="table mt-4 table-bordered">
                     <thead>
                         <tr>
                             <th>id</th>
@@ -117,39 +86,27 @@ while ($item = $itensVenda->fetch_assoc()) {
                 <form method="POST" action="">
                     <div class="form-group">
                         <label for="quantidade_total">Quantidade Total</label>
-                        <input type="text" id="quantidade_total" name="quantidade_total" class="form-control" value="<?php echo $totalQuantidade; ?>" readonly>
+                        <input type="text" id="quantidade_total" name="quantidade_total" class="form-control"
+                            value="<?php echo $totalQuantidade; ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label for="valor_total">Valor Total</label>
-                        <input type="text" id="valor_total" name="valor_total" class="form-control" value="<?php echo number_format($totalValor, 2, ',', '.'); ?>" readonly>
+                        <input type="text" id="valor_total" name="valor_total" class="form-control"
+                            value="<?php echo number_format($totalValor, 2, ',', '.'); ?>" readonly>
                     </div>
                     <div class="form-group">
                         <label for="obs">Observação</label>
                         <textarea id="obs" name="obs" class="form-control"></textarea>
                     </div>
                     <button type="submit" name="finalizar" class="btn btn-success mt-2">Finalizar Venda</button>
-                    <a href="./sistema.php" class="btn btn-danger mt-2">Voltar</a>
+                    <a href="./listaVenda.php" class="btn btn-danger mt-2">Voltar</a>
                 </form>
             </div>
         </div>
     </div>
 
 
-    
-    <script>
-        document.getElementById('produto').addEventListener('change', function () {
-            var produtoId = this.value;
-            if (produtoId) {
-                fetch('buscar_preco.php?id=' + produtoId)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('preco').value = data.preco;
-                    });
-            } else {
-                document.getElementById('preco').value = '';
-            }
-        });
-    </script>
+
 
 </body>
 
