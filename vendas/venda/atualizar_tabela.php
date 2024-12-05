@@ -1,4 +1,4 @@
-<?php
+<?php   
 
 // Totalizadores
 $totalQuantidade = 0;
@@ -16,7 +16,8 @@ $conexao->query("
 UPDATE venda 
 SET 
     data_venda = NOW(), 
-    obs = 'observação', 
+    obs = 'observação',
+    orcamento = 'Orcamento', 
     valor_total = $totalValor, 
     quantidade_total =  $totalQuantidade
 WHERE id = $idVenda

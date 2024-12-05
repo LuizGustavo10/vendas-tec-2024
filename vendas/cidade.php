@@ -117,11 +117,12 @@ if(!empty($_GET['idAlt'])){
 
                   <td> <?php echo $coluna['id'] ?> </td>
                   <td> <?php echo $coluna['nome'] ?> </td>
-                  <td> <?php echo $coluna['cep'] ?> </td>
+                  <td> <?php echo $coluna['cep'] ?> </td> 
                   <td>
                     <a href="cidade.php?idAlt=<?= $coluna['id'] ?>" title="Editar"> <i class="fa-solid fa-pen-to-square editar"></i> </a>
                     <a href="<?php echo './cidade/excluir.php?id='.$coluna['id']; ?>" title="Excluir"> <i class="fa-solid fa-trash excluir"></i></a>
                   </td>
+
                 </tr>
                 
                 <?php } ?>

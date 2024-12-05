@@ -6,7 +6,11 @@ include('validacao.php');
 //caso já exista um id de venda
 if (!empty($_GET['idVenda'])) {
     $idVenda = $_GET['idVenda'];
-} 
+} else {
+    // Criar uma nova venda se não houver uma em andamento
+    $conexao->query("INSERT INTO venda (data_venda) VALUES (NOW())");
+    $idVenda = $conexao->insert_id; // Obter o ID da nova venda
+}
 
 include './venda/adicionar_produto.php';
 include './venda/atualizar_tabela.php';
@@ -73,7 +77,12 @@ include './venda/atualizar_tabela.php';
                             echo "<td>{$item['quantidade']}</td>";
                             echo "<td>{$item['valor']}</td>";
                             echo "<td>" . ($item['quantidade'] * $item['valor']) . "</td>";
-                            echo "<td><a href='./venda/remover_produto.php?idVenda=$idVenda&idItem={$item['id']}' class='btn btn-danger'>Remover</a></td>";
+                            echo "<td><a href='./venda/remover_produto.php?
+                            idVenda=$idVenda
+                            &idItem={$item['id']}
+                            &qtd={$item['quantidade']}
+                            &prod={$item['produto_id']}
+                            ' class='btn btn-danger'>Remover</a></td>";
                             echo "</tr>";
                         }
                         ?>
@@ -83,7 +92,7 @@ include './venda/atualizar_tabela.php';
 
             <div class="col-md-4">
                 <h3> Resumo da Venda</h3>
-                <form method="POST" action="">
+                <form method="POST" action="./venda/finalizar_venda.php">
                     <div class="form-group">
                         <label for="quantidade_total">Quantidade Total</label>
                         <input type="text" id="quantidade_total" name="quantidade_total" class="form-control"
@@ -98,8 +107,8 @@ include './venda/atualizar_tabela.php';
                         <label for="obs">Observação</label>
                         <textarea id="obs" name="obs" class="form-control"></textarea>
                     </div>
-                    <button type="submit" name="finalizar" class="btn btn-success mt-2">Finalizar Venda</button>
-                    <a href="./listaVenda.php" class="btn btn-danger mt-2">Voltar</a>
+                    <a href="./listaVendas.php" type="submit" name="finalizar" class="btn btn-success mt-2">Finalizar</a>
+                    <a href="./venda/remover_venda.php?id=<?=$idVenda?>" class="btn btn-danger mt-2"> Cancelar   </a>
                 </form>
             </div>
         </div>

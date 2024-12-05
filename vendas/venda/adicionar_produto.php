@@ -3,13 +3,6 @@
 //adicionar produto
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
 
-    //caso nao exista venda, cria id
-    if (empty($_GET['idVenda'])) {
-        // Criar uma nova venda se não houver uma em andamento
-        $conexao->query("INSERT INTO venda (data_venda) VALUES (NOW())");
-        $idVenda = $conexao->insert_id; // Obter o ID da nova venda
-    }
-
     // Adicionar produto diretamente à tabela item_venda
     $produtoId = $_POST['produto'];
     $quantidade = $_POST['quantidade'];
